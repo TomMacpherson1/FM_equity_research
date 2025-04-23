@@ -1,0 +1,39 @@
+# Import required packages, note they must have been installed
+import yfinance as yf
+import matplotlib.pyplot as plt
+# Load ASX:NFS from Yahoo Finance
+ticker = yf.Ticker("NHF.AX")
+# Get historical data for 5 years
+data = ticker.history(period="5y")
+# Plot closing prices
+plt.figure(figsize=(12, 6))
+# Create a new figure with a specified size (width=12 inches, height=6 inches)
+plt.figure(figsize=(12, 6))
+
+# Plot the closing prices over time; 'data.index' gives the dates, and 'data['Close']' gives the price
+plt.plot(data.index, data['Close'], label='Closing Price', color='darkgreen')
+
+# Set the title of the chart
+plt.title("ASX:NHF (NIB Holdings) - 5 Year Price History")
+
+# Label the x-axis
+plt.xlabel("Date")
+
+# Label the y-axis
+plt.ylabel("Price (AUD)")
+
+# Show gridlines on the chart for easier reading
+plt.grid(True)
+
+# Display the legend to identify the plotted line
+plt.legend()
+
+# Adjust layout to ensure everything fits well (e.g., labels aren't cut off)
+plt.tight_layout()
+
+# Save the plot to a PNG file named 'nhf_price_chart.png'
+chart_filename = "nhf_price_chart.png"
+plt.savefig(chart_filename)
+
+# Close the plot to free memory and avoid overlap with future plots
+plt.close()
