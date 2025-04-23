@@ -7,3 +7,5 @@ yfinance
 ipywidgets
 fpdf
 lxml
+import yfinance as yf
+import matplotlib.pyplot as plt

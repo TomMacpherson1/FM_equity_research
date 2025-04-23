@@ -1,0 +1,54 @@
+# Import necessary packages
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the CSV file containing NHF price target data
+df = pd.read_csv("ASX-NHF Price Targets.csv")
+
+# Keep only relevant columns and create a clean working copy
+df = df[['Date', 'Consensus Mean', 'Consensus High', 'Consensus Low', 'Actual']].copy()
+
+# Convert the 'Date' column to datetime format for proper plotting
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Ensure data is sorted chronologically (important for plotting time series)
+df.sort_values('Date', inplace=True)
+
+# Start a new figure with custom size
+plt.figure(figsize=(12, 6))
+
+# Plot the actual share price (solid black line)
+plt.plot(df['Date'], df['Actual'], label='Actual Price', color='black', linewidth=2)
+
+# Plot the consensus mean price target (dashed blue line)
+plt.plot(df['Date'], df['Consensus Mean'], label='Consensus Mean', color='blue', linestyle='--')
+
+# Shade the area between the high and low analyst targets to show the range
+plt.fill_between(df['Date'],
+                 df['Consensus Low'],
+                 df['Consensus High'],
+                 color='blue',
+                 alpha=0.2,
+                 label='Target Range (Low–High)')
+
+# Add chart title
+plt.title("ASX:NHF Price Targets vs Actual Price")
+
+# Add labels for the axes
+plt.xlabel("Date")
+plt.ylabel("Price (AUD)")
+
+# Add a legend to explain the plotted lines and shaded region
+plt.legend()
+
+# Turn on gridlines for better readability
+plt.grid(True)
+
+# Ensure everything fits well on the plot
+plt.tight_layout()
+
+# Save the plot as a PNG file
+plt.savefig("ASX_NHF_Price_Targets.png", format='png')
+
+# Display the plot
+plt.show()
