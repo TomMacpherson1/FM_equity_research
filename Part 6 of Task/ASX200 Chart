@@ -1,0 +1,53 @@
+# Import necessary libraries
+# Library to fetch financial data from Yahoo Finance
+import yfinance as yf  
+# Library to create plots and charts
+import matplotlib.pyplot as plt  
+
+# Library for numerical calculations
+import numpy as np
+
+# Fetch data for ASX200 index
+# Set the ticker symbol for the ASX200 index
+ticker = yf.Ticker("^AXJO")  
+# Fetch 5 years of historical data for ASX200
+data = ticker.history(period="5y")  
+
+# Create a plot of the closing price over the last 5 years
+# Set the figure size (width, height)
+plt.figure(figsize=(12, 6))  
+# Plot the closing prices against the date
+plt.plot(data.index, data['Close'], label='Closing Price', color='navy')  
+# Set the title of the plot
+plt.title("ASX200 Index - 5 Year Price History")  
+# Label the x-axis as "Date"
+plt.xlabel("Date")  
+# Label the y-axis as "Price (AUD)"
+plt.ylabel("Price (AUD)")  
+# Display gridlines for better readability
+plt.grid(True)  
+# Show the legend for the plot (optional)
+plt.legend()  
+# Automatically adjust the layout to fit everything nicely
+plt.tight_layout()  
+
+# Create a linear trend line (line of best fit)
+# Convert the dates to numerical format (in days since the first date)
+x = np.arange(len(data))  
+# The y-values are the closing prices
+y = data['Close'].values  
+# Use numpy's polyfit function to calculate the line of best fit (degree 1 means linear)
+slope, intercept = np.polyfit(x, y, 1)  
+# Create the trend line
+trendline = slope * x + intercept  
+# Plot the trend line
+plt.plot(data.index, trendline, label=f"Trend Line: y = {slope:.2f}x + {intercept:.2f}", color='red', linestyle='--')  
+
+
+# Save the plot as a PNG image
+# Define the filename for the saved chart
+chart_filename = "asx200_price_chart_with_trendline.png"  
+# Save the plot as a PNG file
+plt.savefig(chart_filename)  
+# Close the plot to free up memory
+plt.close()   
