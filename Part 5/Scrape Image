@@ -1,0 +1,75 @@
+import requests
+from bs4 import BeautifulSoup
+from fpdf import FPDF
+
+# Set URL and headers
+url = 'https://www.intelligentinvestor.com.au/shares/asx-nhf/nib-holdings-limited/dividends'
+headers = {'User-Agent': 'Mozilla/5.0'}
+
+# Fetch page content
+response = requests.get(url, headers=headers)
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Find the correct h2 heading
+heading = soup.find('h2', string=lambda t: t and 'Latest company dividends' in t)
+if not heading:
+    raise Exception("Heading not found")
+
+# Find the first table after that heading
+table = heading.find_next('table')
+if not table:
+    raise Exception("Table not found after heading")
+
+# Grab all table rows
+rows = table.find_all('tr')
+if len(rows) < 2:
+    raise Exception("Not enough table rows found")
+
+# Parse the header
+header_cells = rows[0].find_all(['th', 'td'])
+header = [cell.get_text(strip=True) for cell in header_cells]
+
+# Parse the first 12 data rows
+data_rows = []
+for row in rows[1:13]:  # Skip header
+    cells = row.find_all('td')
+    if cells:
+        data_rows.append([cell.get_text(strip=True) for cell in cells])
+
+# Create a PDF
+pdf = FPDF()
+pdf.add_page()
+pdf.set_font("Arial", size=7)
+
+# Add title
+pdf.set_font("Arial", 'B', 12)
+pdf.cell(200, 10, "NIB Holdings (NHF) - Latest Dividends", ln=True, align='C')
+pdf.ln(5)
+pdf.set_font("Arial", size=7)
+
+# Calculate column width
+col_width = pdf.w / (len(header) + 1)
+
+# Header row in bold
+pdf.set_font("Arial", 'B', 8)  # Bold font for header
+pdf.set_fill_color(200, 220, 255)
+for col in header:
+    pdf.cell(col_width, 8, col, border=1, fill=True)
+pdf.ln()
+
+# Switch back to normal font for data
+pdf.set_font("Arial", '', 8)
+for row in data_rows:
+    for cell in row:
+        pdf.cell(col_width, 8, cell, border=1)
+    pdf.ln()
+
+# Print data rows
+for row in data_rows:
+    for cell in row:
+        pdf.cell(col_width, 10, cell, border=1)
+    pdf.ln()
+
+# Output PDF
+pdf.output("NHF_dividends_table.pdf")
+print("PDF saved as NHF_dividends_table.pdf")
